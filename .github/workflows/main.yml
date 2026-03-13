@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       agent_name:
-        description: 'KunZinTV'
+        description: 'The name of the agent (e.g., your username)'
         required: true
-        default: 'KunZinTV'
+        default: 'KUNZIN'
       agent_description:
-        description: 'KunZinTV'
+        description: 'A brief description of the agent (e.g., its purpose)'
         required: true
         default: 'finder AI Agent'
 
@@ -26,17 +26,19 @@ jobs:
           node-version: '20'
 
       - name: Bước 1 - Cài đặt ClawHub
-        run: npx clawhub@latest install verified-agent-identity
+        run: npx clawhub@latest install verified-agent-identity --force --no-input
 
       - name: Cài đặt các thư viện cần thiết
         run: |
-          cd scripts
-          npm install
+          cd skills/verified-agent-identity/scripts
+          npm install @0xpolygonid/js-sdk shell-quote @iden3/js-iden3-auth
 
       - name: Bước 2 - Tạo Ethereum Identity mới
-        run: node scripts/createNewEthereumIdentity.js
+        run: |
+          cd skills/verified-agent-identity/scripts
+          node createNewEthereumIdentity.js
 
       - name: Bước 3 - Xem link xác minh Agent
         run: |
-          node scripts/manualLinkHumanToAgent.js --challenge '{"name": "KunZinTV", "description": "KunZinTV AI Agent"}'
-
+          cd skills/verified-agent-identity/scripts
+          node manualLinkHumanToAgent.js --challenge "{\"name\": \"KUNZIN\", \"description\": \"${{ inputs.agent_description }}\"}"
